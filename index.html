@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><meta name="theme-color" content="#10243a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png" type="image/png"><meta name="description" content="Offline Delivery Office EOD reporting app"><title>Delivery Office EOD Manager</title>
+<style>
+:root{--navy:#10243a;--blue:#1769aa;--bg:#f3f6fa;--line:#dce3eb;--green:#16794b;--red:#b42318}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:#142235}header{background:var(--navy);color:white;padding:18px 16px 14px;position:sticky;top:0;z-index:5}header h1{font-size:20px;margin:0 0 5px}header small{opacity:.8}.tabs{display:flex;overflow-x:auto;overflow-y:hidden;touch-action:pan-x;background:white;border-bottom:1px solid var(--line);position:sticky;top:68px;z-index:4}.tabs button{flex:0 0 auto;min-height:48px;touch-action:manipulation;cursor:pointer;border:0;background:white;padding:13px 14px;white-space:nowrap;font-weight:bold;color:#526174}.tabs button.active{color:var(--blue);border-bottom:3px solid var(--blue)}main{padding:14px;max-width:760px;margin:auto}.panel{display:none}.panel.active{display:block}.card{background:white;border:1px solid var(--line);border-radius:13px;padding:14px;margin-bottom:12px;box-shadow:0 2px 7px #14223508}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.metric{background:white;border:1px solid var(--line);border-radius:12px;padding:13px}.metric b{display:block;font-size:21px;margin-top:6px}.muted{color:#65758a;font-size:12px}label{display:block;font-size:13px;font-weight:bold;margin:11px 0 5px}input,select,textarea{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:9px;background:white;font-size:16px;color:#142235}input[type=number]{appearance:textfield}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.btn{width:100%;border:0;border-radius:9px;background:var(--blue);color:white;font-size:15px;font-weight:bold;padding:13px;margin-top:12px}.btn.secondary{background:#e8eef5;color:#19334d}.btn.danger{background:#fff0ef;color:var(--red)}.btn.small{width:auto;padding:8px 10px;font-size:12px;margin:4px}.pill{display:inline-block;padding:4px 8px;border-radius:20px;background:#e8f2fc;color:#14558a;font-size:12px;font-weight:bold}.record{border-top:1px solid var(--line);padding:11px 0}.record:first-child{border-top:0}.record strong{display:block}.right{float:right}.note{font-size:12px;color:#65758a;line-height:1.5}.success{color:var(--green);font-weight:bold}.warn{color:var(--red);font-weight:bold}.hidden{display:none!important}h2{font-size:18px;margin:3px 0 10px}h3{font-size:15px;margin:4px 0 8px}.den-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.den-grid label{margin-top:4px}.tablewrap{overflow:auto}table{border-collapse:collapse;width:100%;font-size:12px}th,td{border:1px solid var(--line);padding:8px;text-align:right}th:first-child,td:first-child{text-align:left}th{background:#f0f4f8}
+ 
+.form-grid{display:grid;gap:9px;margin:8px 0 12px}
+.form-grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.form-grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.form-grid label{font-size:12px;margin:2px 0 5px;min-height:27px}
+.form-grid input,.form-grid select{padding:10px 7px;font-size:15px;min-width:0}
+.result{min-height:41px;border:1px solid #cbd5e1;border-radius:9px;background:#f0f4f8;padding:11px 7px;font-weight:bold;text-align:center;overflow-wrap:anywhere}
+.report-sheet h2{text-align:center;margin-bottom:14px}
+.denomination-block{border-top:1px solid var(--line);padding-top:8px;margin-top:10px}
+.denomination-block h3{margin:3px 0 8px}
+@media(max-width:380px){main{padding:8px}.card{padding:10px}.form-grid{gap:6px}.form-grid label{font-size:11px}.form-grid input,.form-grid select{font-size:14px;padding:9px 5px}}
+</style></head><body>
+<header><h1>TIU DC – Delivery Office Manager</h1><small>Offline daily delivery & COD reporting · Data saved on this phone</small></header>
+<nav class="tabs"><button type="button" class="active" data-tab="home" onclick="showTab(&quot;home&quot;)">Dashboard</button><button type="button" data-tab="entry" onclick="showTab(&quot;entry&quot;)">Daily Report + Cash</button><button type="button" data-tab="history" onclick="showTab(&quot;history&quot;)">History</button><button type="button" data-tab="settings" onclick="showTab(&quot;settings&quot;)">Settings</button></nav>
+<main>
+<section id="home" class="panel active">
+<div class="card"><strong id="homeBoy">This phone: Boy 1</strong><p class="note">The assigned delivery boy can be changed in Settings. Reports stay on this phone.</p></div>
+<div class="grid">
+<div class="metric"><span class="muted">Assigned today</span><b id="mAssigned">0</b></div><div class="metric"><span class="muted">Delivered today</span><b id="mDelivered">0</b></div>
+<div class="metric"><span class="muted">Delivery %</span><b id="mPercent">0%</b></div><div class="metric"><span class="muted">Pending</span><b id="mPending">0</b></div>
+<div class="metric"><span class="muted">COD cash</span><b id="mCash">₹0</b></div><div class="metric"><span class="muted">COD account / UPI</span><b id="mUpi">₹0</b></div>
+</div><div class="card" style="margin-top:12px"><h3>Today's summary</h3><div id="todaySummary" class="muted">No report saved for today.</div></div>
+<div class="card"><h3>Important</h3><p class="note">Offline data stays on this phone. To combine all five boys' reports at the office, each boy must export and send the CSV report to the office admin, or the phones must later be connected to a shared online database.</p><button class="btn secondary" onclick="exportCSV()">Export this phone's reports (CSV)</button></div>
+</section>
+<section id="entry" class="panel">
+<div class="card report-sheet" id="reportSheet">
+<h2>TIU DC – DAILY EOD REPORT</h2>
+<div class="form-grid two">
+  <div><label>Date</label><input id="date" type="date"></div>
+  <div><label>Delivery Boy Name</label><input id="entryBoyName" type="text" value="" placeholder="Enter delivery boy name"></div>
+</div>
+<div class="form-grid three">
+  <div><label>Assigned</label><input id="assigned" type="number" min="0" value="0"></div>
+  <div><label>Delivered</label><input id="delivered" type="number" min="0" value="0"></div>
+  <div><label>Percentage</label><div class="result" id="deliveryPercent">0.00%</div></div>
+  <div><label>Pickups</label><input id="picked" type="number" min="0" value="0"></div>
+  <div><label>Packed</label><input id="packed" type="number" min="0" value="0"></div>
+  <div><label>Total Deliveries & Packed</label><div class="result" id="totalDone">0</div></div>
+</div>
+<div class="form-grid two">
+  <div><label>Total COD Received (₹)</label><input id="codTotal" type="number" min="0" step=".01" value="0"></div>
+  <div><label>COD in UPI (₹)</label><input id="codUpi" type="number" min="0" step=".01" value="0"></div>
+</div>
+<div class="form-grid two">
+  <div><label>COD in Cash (₹)</label><input id="codCash" type="number" min="0" step=".01" value="0"></div>
+  <div><label>Short Amount (UPI + Cash − Total COD)</label><div class="result" id="shortAmount">₹0</div></div>
+</div>
+<div class="denomination-block">
+  <h3>Cash Denomination</h3>
+  <div class="form-grid three">
+    <div><label>₹500</label><input id="n500" type="number" min="0" value="0"></div>
+    <div><label>₹200</label><input id="n200" type="number" min="0" value="0"></div>
+    <div><label>₹100</label><input id="n100" type="number" min="0" value="0"></div>
+    <div><label>₹50</label><input id="n50" type="number" min="0" value="0"></div>
+    <div><label>₹20</label><input id="n20" type="number" min="0" value="0"></div>
+    <div><label>₹10</label><input id="n10" type="number" min="0" value="0"></div>
+  </div>
+  <div class="form-grid two">
+    <div><label>Coins Total (₹)</label><input id="coins" type="number" min="0" step=".01" value="0"></div>
+    <div><label>Denomination Total (₹)</label><div class="result" id="cashTotalDisplay">₹0</div></div>
+  </div>
+  <p class="note" id="cashCalc">Denomination difference from COD cash: ₹0</p>
+</div>
+<label>Remarks</label><textarea id="remarks" rows="2" placeholder="Enter remarks"></textarea>
+<p class="note" id="calc">Pending deliveries: 0</p>
+</div>
+<button class="btn" onclick="saveReport()">Save Daily Report</button>
+<button class="btn secondary" onclick="saveAndShareImage()">Save Image and Share</button>
+</section>
+<section id="history" class="panel"><div class="card"><h2>Payment history</h2><label>Date</label><input id="payDate" type="date"><label>Payment mode</label><select id="payMode"><option>Cash</option><option>Account / UPI</option><option>Bank Deposit</option><option>Other</option></select><label>Amount (₹)</label><input id="payAmount" type="number" min="0" step=".01"><label>Reference / UTR</label><input id="payRef" placeholder="Optional transaction reference"><label>Received by</label><input id="receivedBy" placeholder="Office staff name"><label>Remarks</label><textarea id="payRemarks" rows="2"></textarea><button class="btn" onclick="savePayment()">Save payment entry</button></div>
+<div class="card"><h3>Saved reports & payments</h3><div id="records"></div></div></section>
+<section id="settings" class="panel"><div class="card"><h2>Delivery boy names & phone setup</h2><p class="note">Edit the names below. Choose which delivery boy this phone belongs to. Changes are saved on this phone only.</p>
+<label>Delivery Boy 1 name</label><input id="name0" placeholder="Enter name">
+<label>Delivery Boy 2 name</label><input id="name1" placeholder="Enter name">
+<label>Delivery Boy 3 name</label><input id="name2" placeholder="Enter name">
+<label>Delivery Boy 4 name</label><input id="name3" placeholder="Enter name">
+<label>Delivery Boy 5 name</label><input id="name4" placeholder="Enter name">
+<button class="btn secondary" onclick="saveNames()">Save delivery boy names</button>
+<label>This phone is assigned to</label><select id="settingsBoy"></select><button class="btn" onclick="setProfile()">Save phone assignment</button>
+<button class="btn secondary" onclick="exportCSV()">Export reports to CSV</button><button class="btn secondary" onclick="exportBackup()">Export full backup (JSON)</button><label>Restore backup (JSON)</label><input id="restoreFile" type="file" accept=".json,application/json"><button class="btn secondary" onclick="restoreBackup()">Restore backup</button><p class="note">Keep exported backups safely. Clearing browser data or deleting the file's site data can erase locally stored reports.</p></div></section>
+</main>
+<script>
+const $=id=>document.getElementById(id), today=()=>{let d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const get=(k,d=[])=>{try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}}, put=(k,v)=>localStorage.setItem(k,JSON.stringify(v)), money=n=>'₹'+(Number(n)||0).toLocaleString('en-IN',{maximumFractionDigits:2});
+let reports=get('reports'), cashCounts=get('cashCounts'), payments=get('payments');
+let names=get('boyNames',['Boy 1','Boy 2','Boy 3','Boy 4','Boy 5']);
+while(names.length<5) names.push('Boy '+(names.length+1));
+let profile=localStorage.getItem('profile')||names[0];
+function options(){return names.map((n,i)=>`<option value="${i}">${escapeHtml(n||('Boy '+(i+1)))}</option>`).join('')}
+function escapeHtml(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function profileIndex(){let i=names.indexOf(profile);return i<0?0:i}
+function refreshNames(){
+  $('settingsBoy').innerHTML=options();
+  $('settingsBoy').value=String(profileIndex());
+  $('homeBoy').textContent='This phone: '+profile;
+  // Delivery boy name is intentionally left blank for manual entry.
+  
+  for(let i=0;i<5;i++) $('name'+i).value=names[i]||'';
+}
+function showTab(tabId){
+  document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('active',b.dataset.tab===tabId));
+  document.querySelectorAll('.panel').forEach(panel=>panel.classList.toggle('active',panel.id===tabId));
+  if(tabId==='history') renderHistory();
+  window.scrollTo(0,0);
+}
+function init(){
+  ['date','payDate'].forEach(x=>$(x).value=today());
+  refreshNames();
+  $('date').value=today(); // Refresh the report date automatically whenever the page opens.
+  $('entryBoyName').value='';
+  document.querySelectorAll('.tabs button').forEach(b=>{
+    b.addEventListener('click',()=>showTab(b.dataset.tab));
+  });
+  ['assigned','delivered','packed','codTotal','codUpi','codCash'].forEach(x=>$(x).oninput=()=>{calc();cashCalc();});
+  ['n500','n200','n100','n50','n20','n10','coins'].forEach(x=>$(x).oninput=cashCalc);
+  render();
+}
+function calc(){
+  let a=+$('assigned').value,d=+$('delivered').value,p=+$('packed').value;
+  let total=+$('codTotal').value,upi=+$('codUpi').value,cash=+$('codCash').value;
+  $('totalDone').textContent=d+p;
+  $('deliveryPercent').textContent=(a?(d/a*100).toFixed(2):'0.00')+'%';
+  $('shortAmount').textContent=money(upi+cash-total);
+  $('calc').textContent=`Pending deliveries: ${a-d}`;
+}
+function cashTotal(){return +$('n500').value*500 + +$('n200').value*200 + +$('n100').value*100 + +$('n50').value*50 + +$('n20').value*20 + +$('n10').value*10 + +$('coins').value;}
+function cashCalc(){
+  let total=cashTotal(),cash=+$('codCash').value;
+  $('cashTotalDisplay').textContent=money(total);
+  $('cashCalc').textContent=`Denomination difference from COD cash: ${money(total-cash)}`;
+}
+function saveReport(){
+  let a=+$('assigned').value,d=+$('delivered').value,p=+$('packed').value;
+  let total=+$('codTotal').value,upi=+$('codUpi').value,cash=+$('codCash').value;
+  if(d>a){alert('Delivered cannot be greater than assigned.');return}
+  if(!$('date').value){alert('Choose a date');return}
+  let boyName=$('entryBoyName').value.trim(); if(!boyName){alert('Enter delivery boy name first');$('entryBoyName').focus();return}
+  let r={date:$('date').value,boy:boyName,hub:'TIU DC',assigned:a,delivered:d,percentage:a?d/a*100:0,picked:+$('picked').value,packed:p,totalDeliveredPacked:d+p,codTotal:total,codUpi:upi,codCash:cash,shortAmount:upi+cash-total,denominationTotal:cashTotal(),n500:+$('n500').value,n200:+$('n200').value,n100:+$('n100').value,n50:+$('n50').value,n20:+$('n20').value,n10:+$('n10').value,coins:+$('coins').value,remarks:$('remarks').value};
+  reports.push(r);put('reports',reports);alert('Daily report saved on this phone.');render();renderHistory();
+}
+function saveCash(){
+  let boyName=$('entryBoyName').value.trim(); if(!boyName){alert('Enter delivery boy name first');$('entryBoyName').focus();return}
+  let r={date:$('date').value,boy:boyName,hub:'TIU DC',n500:+$('n500').value,n200:+$('n200').value,n100:+$('n100').value,n50:+$('n50').value,n20:+$('n20').value,n10:+$('n10').value,coins:+$('coins').value,total:cashTotal(),entered:+$('codCash').value};
+  cashCounts.push(r);put('cashCounts',cashCounts);alert('Cash denomination saved on this phone.');renderHistory();
+}
+function savePayment(){let p={date:$('payDate').value,boy:profile,mode:$('payMode').value,amount:+$('payAmount').value,ref:$('payRef').value,receivedBy:$('receivedBy').value,remarks:$('payRemarks').value};if(!p.amount){alert('Enter payment amount');return}payments.push(p);put('payments',payments);$('payAmount').value='';$('payRef').value='';$('payRemarks').value='';alert('Payment history saved.');renderHistory();}
+function render(){
+  let day=today(),r=reports.filter(x=>x.date===day&&x.boy===profile),sum=k=>r.reduce((s,x)=>s+(+x[k]||0),0),a=sum('assigned'),d=sum('delivered'),c=sum('codCash'),u=sum('codUpi');
+  $('mAssigned').textContent=a;$('mDelivered').textContent=d;$('mPercent').textContent=(a?d/a*100:0).toFixed(1)+'%';$('mPending').textContent=a-d;$('mCash').textContent=money(c);$('mUpi').textContent=money(u);$('todaySummary').textContent=r.length?`${r.length} report(s) · Pickups: ${sum('picked')} · Total COD: ${money(sum('codTotal'))}`:'No report saved for today.';
+  refreshNames();
+}
+function renderHistory(){let h='';reports.slice().reverse().forEach(r=>h+=`<div class="record"><strong>${escapeHtml(r.date)} · ${escapeHtml(r.boy)}</strong><span class="muted">Assigned ${r.assigned} | Delivered ${r.delivered} | Pickups ${r.picked||0} | Packed ${r.packed||0} | Total done ${r.totalDeliveredPacked??((r.delivered||0)+(r.packed||0))} | COD ${money(r.codTotal)} · Cash ${money(r.codCash)} · UPI ${money(r.codUpi)}</span></div>`);cashCounts.slice().reverse().forEach(r=>h+=`<div class="record"><strong>${escapeHtml(r.date)} · ${escapeHtml(r.boy)} · Cash count</strong><span class="muted">${money(r.total)} counted · Difference ${money(r.total-r.entered)}</span></div>`);payments.slice().reverse().forEach(p=>h+=`<div class="record"><strong>${escapeHtml(p.date)} · ${escapeHtml(p.boy)} · ${escapeHtml(p.mode)}</strong><span class="muted">${money(p.amount)} · ${escapeHtml(p.ref||'No reference')} · ${escapeHtml(p.receivedBy||'')}</span></div>`);$('records').innerHTML=h||'<span class="muted">No history saved yet.</span>';}
+function saveNames(){
+  names=Array.from({length:5},(_,i)=>$('name'+i).value.trim()||('Boy '+(i+1)));
+  put('boyNames',names);
+  let old=profileIndex();profile=names[old];localStorage.setItem('profile',profile);
+  refreshNames();alert('Delivery boy names saved on this phone.');render();
+}
+function setProfile(){let i=+$('settingsBoy').value;profile=names[i]||names[0];localStorage.setItem('profile',profile);refreshNames();render();alert('Phone assignment saved.');}
+function csvCell(x){return '"'+String(x??'').replaceAll('"','""')+'"'}
+function download(name,content,type){let a=document.createElement('a'),u=URL.createObjectURL(new Blob([content],{type}));a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}
+function exportCSV(){let rows=[['Type','Date','Boy','Assigned','Delivered','Picked up','Packed','COD total','COD cash','COD UPI','Remarks','Denomination total','Difference','Payment mode','Amount','Reference','Received by']];reports.forEach(r=>rows.push(['Daily',r.date,r.boy,r.assigned,r.delivered,r.picked,r.packed,r.codTotal,r.codCash,r.codUpi,r.remarks]));cashCounts.forEach(r=>rows.push(['Cash count',r.date,r.boy,'','','','','','','','',r.total,r.total-r.entered]));payments.forEach(p=>rows.push(['Payment',p.date,p.boy,'','','','','','','','', '', '',p.mode,p.amount,p.ref,p.receivedBy]));download('delivery-office-'+profile.replace(/[^a-z0-9]/gi,'_')+'-'+today()+'.csv','\ufeff'+rows.map(r=>r.map(csvCell).join(',')).join('\n'),'text/csv;charset=utf-8');}
+function exportBackup(){download('delivery-backup-'+profile.replace(/[^a-z0-9]/gi,'_')+'.json',JSON.stringify({profile,names,reports,cashCounts,payments},null,2),'application/json')}
+function restoreBackup(){let f=$('restoreFile').files[0];if(!f){alert('Choose a backup JSON file');return}let rd=new FileReader();rd.onload=()=>{try{let b=JSON.parse(rd.result);reports=b.reports||[];cashCounts=b.cashCounts||[];payments=b.payments||[];names=b.names||names;profile=b.profile||profile;put('reports',reports);put('cashCounts',cashCounts);put('payments',payments);put('boyNames',names);localStorage.setItem('profile',profile);refreshNames();render();renderHistory();alert('Backup restored.')}catch(e){alert('Invalid backup file.')}};rd.readAsText(f);}
+
+function saveAndShareImage(){
+  const vals={
+    date:$('date').value||'',name:$('entryBoyName').value.trim(),assigned:$('assigned').value,delivered:$('delivered').value,
+    percent:$('deliveryPercent').textContent,pickups:$('picked').value,packed:$('packed').value,
+    totalDone:$('totalDone').textContent,codTotal:money($('codTotal').value),upi:money($('codUpi').value),
+    cash:money($('codCash').value),short:money((+$('codUpi').value)+(+$('codCash').value)-(+$('codTotal').value)),
+    denTotal:money(cashTotal()),remarks:$('remarks').value
+  };
+  const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');
+  canvas.width=900;canvas.height=1320;ctx.fillStyle='#fff';ctx.fillRect(0,0,900,1320);
+  ctx.fillStyle='#10243a';ctx.fillRect(0,0,900,105);
+  ctx.fillStyle='#fff';ctx.font='bold 34px Arial';ctx.fillText('TIU DC – DAILY EOD REPORT',40,65);
+  let y=155;ctx.fillStyle='#15263b';ctx.font='bold 25px Arial';
+  function line(label,value){ctx.fillStyle='#65758a';ctx.font='20px Arial';ctx.fillText(label,45,y);ctx.fillStyle='#142235';ctx.font='bold 25px Arial';ctx.fillText(String(value),480,y);y+=57;}
+  line('Date',vals.date);line('Delivery Boy Name',vals.name);line('Assigned',vals.assigned);line('Delivered',vals.delivered);line('Delivery Percentage',vals.percent);line('Pickups',vals.pickups);line('Packed',vals.packed);line('Total Deliveries & Packed',vals.totalDone);line('Total COD Received',vals.codTotal);line('COD in UPI',vals.upi);line('COD in Cash',vals.cash);line('Short Amount (UPI + Cash - Total COD)',vals.short);
+  y+=5;ctx.fillStyle='#10243a';ctx.font='bold 26px Arial';ctx.fillText('CASH DENOMINATION',45,y);y+=48;
+  line('₹500 notes', $('n500').value);line('₹200 notes',$('n200').value);line('₹100 notes',$('n100').value);line('₹50 notes',$('n50').value);line('₹20 notes',$('n20').value);line('₹10 notes',$('n10').value);line('Coins total',money($('coins').value));line('Denomination Total',vals.denTotal);
+  ctx.fillStyle='#65758a';ctx.font='20px Arial';ctx.fillText('Remarks',45,y);y+=35;ctx.fillStyle='#142235';ctx.font='22px Arial';ctx.fillText(vals.remarks||'-',45,y,{maxWidth:800});
+  canvas.toBlob(async blob=>{
+    if(!blob){alert('Could not create image on this browser.');return}
+    const file=new File([blob],'TIU-DC-EOD-'+vals.date+'.png',{type:'image/png'});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){
+      try{await navigator.share({files:[file],title:'TIU DC EOD Report'});}catch(e){}
+    }else{
+      const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=file.name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);
+      alert('Report image saved. You can share it from your Downloads / Gallery.');
+    }
+  },'image/png');
+}
+
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){$('date').value=today();}});
+init();calc();cashCalc();
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(err => console.log('Offline cache setup:', err)));
+}
+</script></body></html>
